@@ -23,12 +23,9 @@ class UsersAdapter(private val users: List<User>) : RecyclerView.Adapter<UsersAd
         holder.lastName.text = "- ${user.author}"
     }
 
-
     class ViewHolder (itemView: View): RecyclerView.ViewHolder(itemView){
-
         val firstName = itemView.first_name
         val lastName = itemView.last_name
-
     }
 
 }
