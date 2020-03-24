@@ -1,13 +1,15 @@
 package com.dynamicdudes.kotlinretrofit
-import android.content.DialogInterface
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_main.*
-import retrofit2.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import stream.customalert.CustomAlertDialogue
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -25,16 +27,17 @@ class MainActivity : AppCompatActivity() {
 
         api.fetchAllUser().enqueue(object : Callback<List<User>>{
             override fun onFailure(call: Call<List<User>>, t: Throwable) {
-                val dialogBuilder = AlertDialog.Builder(this@MainActivity)
-                dialogBuilder.setMessage("Have you turned on the internet connection ?")
-                    .setCancelable(false)
-                    .setPositiveButton("Turn on", DialogInterface.OnClickListener {
-                            dialog, id -> dialog.cancel()
-                        Toast.makeText(applicationContext,"Please turn on Internet and reopen the application.",Toast.LENGTH_LONG).show()
-                    })
-                val alert = dialogBuilder.create()
-                alert.setTitle("No Internet Connection")
+                val alert =
+                    CustomAlertDialogue.Builder(this@MainActivity)
+                        .setStyle(CustomAlertDialogue.Style.DIALOGUE)
+                        .setTitle("No Internet Connection")
+                        .setMessage("Please check you internet connection. If it is not turned on please turn it on. ")
+                        .setNegativeText("OK")
+                        .setOnNegativeClicked { view, dialog -> dialog.dismiss() }
+                        .setDecorView(window.decorView)
+                        .build()
                 alert.show()
+                call.clone().enqueue(this)
             }
             override fun onResponse(call: Call<List<User>>, response: Response<List<User>>) {
                 showData(response.body()!!)
